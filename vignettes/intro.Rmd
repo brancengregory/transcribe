@@ -18,72 +18,45 @@ knitr::opts_chunk$set(
 # library(transcribe)
 ```
 
-#' Transcribe and Post-Process Audio Files Using Whisper and Ollama
-#'
-#' This vignette demonstrates how to use the transcribe script to convert audio files (or URLs) into text using the OpenAI Whisper model, with optional post-processing via the Ollama model (using ellmer). The script integrates several tidyverse principles and uses packages such as **fs** and **readr** for file I/O, and **processx** (as a recommended alternative to system2) for external process management.
-#'
-#' @section Overview:
-#'
-#' The script supports:
-#' \itemize{
-#'   \item Validation of local input files using **fs**
-#'   \item URL detection: if a URL is provided, the script uses **yt-dlp** to download and convert the audio to a WAV file.
-#'   \item Transcription using the **whisper** Python module via **reticulate**.
-#'   \item Optional post-processing using **Ollama** via the **ellmer** package, with connectivity and model validation handled by **rollama**.
-#'   \item Saving the final transcript to a file using **readr**.
-#' }
-#'
-#' @section Installation:
-#'
-#' Ensure that you have the following R packages installed:
-#' \itemize{
-#'   \item **optparse**
-#'   \item **cli**
-#'   \item **reticulate**
-#'   \item **ellmer**
-#'   \item **stringr**
-#'   \item **rlang**
-#'   \item **rollama**
-#'   \item **fs**
-#'   \item **readr**
-#' }
-#'
-#' In addition, install **yt-dlp** on your system to support URL-based input.
-#'
-#' @section Usage:
-#'
-#' Run the script from the command line as follows:
-#'
-#' \preformatted{
-#'   Rscript transcribe_script.R -i "path_or_url_to_audio" -l en -m large-v3-turbo -p TRUE -M llama3.2 -o "transcribe.txt"
-#' }
-#'
-#' @section Example:
-#'
-#' The following example downloads an audio file from a URL, transcribes it, optionally post-processes the transcript using the Ollama model, and saves the result to a file:
-#'
-#' \preformatted{
-#'   Rscript transcribe_script.R --input "https://www.youtube.com/watch?v=dQw4w9WgXcQ" \
-#'     --language "en" --model "large-v3-turbo" --processed TRUE \
-#'     --ollama-model "llama3.2" --outfile "transcribe.txt"
-#' }
-#'
-#' @section Process Management:
-#'
-#' While the script currently uses `system2()` (or similar functions) to call **yt-dlp**, a more robust alternative is the **processx** package, which offers strict error handling, timeout control, and clearer access to output and error messages. This fits well with the tidyverse and **rlang** philosophies.
-#'
-#' @section Additional Notes:
-#'
-#' The script ensures:
-#' \itemize{
-#'   \item Early validation of input files and connectivity to the Ollama server.
-#'   \item Flexible handling of model names (both full names and namespace variants).
-#'   \item Consistent use of tidyverse packages for file system and I/O operations.
-#' }
-#'
-#' @docType vignette
-#' @name transcribe_vignette
-#' @format An R Markdown document
-#' @author Your Name
-#'
-NULL
+# Introduction
+
+This vignette introduces the **transcribe** package. The package provides an R interface to transcribe audio using Whisper, with optional post‐processing via Ollama.
+
+## Installation
+
+```{r, eval=FALSE}
+# Install from GitHub (if not on CRAN yet)
+# install.packages("remotes")
+remotes::install_github("YourUserName/transcribe")
+```
+
+## Basic Usage
+
+Below is a minimal example showing how to transcribe an audio file:
+
+```{r, eval=FALSE}
+# library(transcribe) # Uncomment once your package is installed
+# transcript <- transcribe_audio(
+#   input_path = "path/to/audio.wav",
+#   language = "en",
+#   whisper_model_name = "large-v3-turbo",
+#   processed = TRUE,
+#   ollama_model = "llama3.2"
+# )
+# cat(transcript)
+```
+
+## Plumber Integration
+
+You can serve a web interface via **plumber**:
+
+```{r, eval=FALSE}
+# library(plumber)
+# plumber::plumb("inst/plumber/api.R")$run()
+```
+
+Open your browser at `http://127.0.0.1:port` to see the interface.
+
+## Conclusion
+
+This vignette covered the basics of installing and using **transcribe** for audio transcription. See the README or additional vignettes for more details.
