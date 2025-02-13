@@ -35,7 +35,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/intro.html">intro</a></li>
+<li><a class="dropdown-item" href="articles/intro.html">Introduction</a></li>
   </ul>
 </li>
       </ul>
@@ -53,14 +53,52 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="transcribe-">transcribe <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#transcribe-"></a>
 </h1></div>
-<p><a href="https://github.com/YourUserName/transcribe/actions" class="external-link"><img src="https://github.com/YourUserName/transcribe/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></p>
-<p>The <strong>transcribe</strong> package provides an R interface to audio transcription using Whisper, with optional post‐processing via Ollama. It also includes a sample plumber API for a web interface and a command-line interface (CLI).</p>
+<p><a href="https://github.com/brancengregory/transcribe/actions" class="external-link"><img src="https://github.com/brancengregory/transcribe/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></p>
+<p>The <strong>transcribe</strong> package provides an R interface to audio transcription using Whisper, with optional post‑processing via Ollama. It includes a command‑line interface (CLI) and a Plumber API to create a web interface.</p>
+<div class="section level2">
+<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+</h2>
+<ul>
+<li><p><strong>Whisper</strong>:<br>
+Make sure you have <a href="https://github.com/openai/whisper" class="external-link">OpenAI Whisper</a> installed and configured. Follow the official documentation for installation instructions.</p></li>
+<li><p><strong>Ollama</strong>:<br>
+Ensure that <a href="https://ollama.com" class="external-link">Ollama</a> is installed and running. Consult the Ollama documentation for setup details and configuration.</p></li>
+<li>
+<p><strong>Other Dependencies</strong>:<br>
+This package uses:</p>
+<ul>
+<li>
+<strong>processx</strong> to wrap the <code>yt-dlp</code> command for downloading audio files.</li>
+<li>
+<strong>reticulate</strong> to call Python’s Whisper implementation.</li>
+<li>
+<strong>ellmer</strong> for prompt-based post‑processing of raw Whisper transcripts.<br>
+Please refer to each package’s documentation for further details.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>The package workflow is as follows:</p>
+<ul>
+<li><p><strong>Audio Downloading</strong>:<br>
+When given a remote URL, <strong>processx</strong> is used to call <code>yt-dlp</code>, downloading the audio file quickly and robustly.</p></li>
+<li><p><strong>Transcription via Whisper</strong>:<br>
+Python’s Whisper is called via <strong>reticulate</strong>, providing state‑of‑the‑art transcription directly from R.</p></li>
+<li><p><strong>Post‑processing with Ollama and ellmer</strong>:<br>
+The raw transcript from Whisper is optionally sent to Ollama via <strong>ellmer</strong> using a prompt (e.g., “Reformat the transcript into clear, well‑punctuated paragraphs…”) to produce a cleaned, readable transcript.</p></li>
+<li><p><strong>Interfaces</strong>:<br>
+Use the CLI for batch processing, or launch the Plumber API to access a web interface.</p></li>
+</ul>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes") # if needed</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"YourUserName/transcribe"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes") # if not already installed</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"brancengregory/transcribe"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -71,7 +109,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brancengregory.github.io/transcribe/">transcribe</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Transcribe a local audio file</span></span>
+<span><span class="co"># Transcribe a local audio file.</span></span>
 <span><span class="va">transcript</span> <span class="op">&lt;-</span> <span class="fu">transcribe_audio</span><span class="op">(</span></span>
 <span>  input_path <span class="op">=</span> <span class="st">"path/to/audio.wav"</span>,</span>
 <span>  language <span class="op">=</span> <span class="st">"en"</span>,</span>
@@ -84,26 +122,40 @@
 <div class="section level3">
 <h3 id="cli-usage">CLI Usage<a class="anchor" aria-label="anchor" href="#cli-usage"></a>
 </h3>
-<p>To use the CLI, run the following command from your terminal:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/scripts/cli.R <span class="at">-i</span> <span class="st">"path/to/audio.wav"</span> <span class="at">-l</span> en <span class="at">-m</span> large-v3-turbo <span class="at">-p</span> TRUE <span class="at">-M</span> llama3.2 <span class="at">-o</span> <span class="st">"transcribe.txt"</span></span></code></pre></div>
-<p>This command will transcribe the audio file and save the output to <code>transcribe.txt</code>.</p>
+<p>To use the command‑line interface, run the following command from your terminal:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/scripts/main_cli.R <span class="at">-i</span> <span class="st">"path/to/audio.wav"</span> <span class="at">-l</span> en <span class="at">-m</span> large-v3-turbo <span class="at">-p</span> TRUE <span class="at">-M</span> llama3.2 <span class="at">-o</span> <span class="st">"transcribe.txt"</span></span></code></pre></div>
+<p>This command processes the specified audio file and saves the transcript to <code>transcribe.txt</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="plumber-api">Plumber API<a class="anchor" aria-label="anchor" href="#plumber-api"></a>
 </h3>
-<p>You can also serve a web interface via <strong>plumber</strong>:</p>
+<p>You can serve a web interface via <strong>plumber</strong>. For example:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.rplumber.io" class="external-link">plumber</a></span><span class="op">)</span></span>
 <span><span class="fu">plumber</span><span class="fu">::</span><span class="fu">plumb</span><span class="op">(</span><span class="st">"inst/plumber/api.R"</span><span class="op">)</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span>port <span class="op">=</span> <span class="fl">7608</span><span class="op">)</span></span></code></pre></div>
-<p>Then open your browser at <a href="http://127.0.0.1:7608" class="external-link uri">http://127.0.0.1:7608</a> to access the transcription interface.</p>
+<p>Then open your browser at <a href="http://127.0.0.1:7608" class="external-link uri">http://127.0.0.1:7608</a> to use the transcription interface.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
 </h2>
-<p>Access the vignette “intro” by running:</p>
+<p>For a detailed introduction, see the vignette “intro”:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"intro"</span>, package <span class="op">=</span> <span class="st">"transcribe"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Fork the repository on GitHub.</li>
+<li>Create a new branch for your changes.</li>
+<li>Submit a pull request describing your proposed changes.</li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MIT © 2025 Your Name</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
