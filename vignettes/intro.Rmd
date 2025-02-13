@@ -14,13 +14,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-# library(transcribe)
-```
-
 # Introduction
 
-This vignette introduces the **transcribe** package. The package provides an R interface to transcribe audio using Whisper, with optional post‐processing via Ollama.
+This vignette introduces the **transcribe** package. The package provides an R interface to transcribe audio using Whisper, with optional post‐processing via Ollama. It supports both a programmatic interface and a command-line interface (CLI).
 
 ## Installation
 
@@ -46,17 +42,27 @@ Below is a minimal example showing how to transcribe an audio file:
 # cat(transcript)
 ```
 
+## CLI Usage
+
+The **transcribe** package also provides a command-line interface (CLI). Once installed, you can run the CLI from your terminal. For example, if you have a script set up in `inst/scripts/cli.R`, you can execute:
+
+```bash
+Rscript inst/scripts/cli.R -i "path/to/audio.wav" -l en -m large-v3-turbo -p TRUE -M llama3.2 -o "transcribe.txt"
+```
+
+This command will process the specified audio file and save the resulting transcript to `transcribe.txt`.
+
 ## Plumber Integration
 
 You can serve a web interface via **plumber**:
 
 ```{r, eval=FALSE}
 # library(plumber)
-# plumber::plumb("inst/plumber/api.R")$run()
+# plumber::plumb("inst/plumber/api.R")$run(port = 7608)
 ```
 
-Open your browser at `http://127.0.0.1:port` to see the interface.
+Then open your browser at [http://127.0.0.1:7608](http://127.0.0.1:7608) to access the interface.
 
 ## Conclusion
 
-This vignette covered the basics of installing and using **transcribe** for audio transcription. See the README or additional vignettes for more details.
+This vignette covered the basics of installing and using **transcribe** for audio transcription, including examples for both programmatic usage and command-line usage. For further details, refer to the package documentation and additional vignettes.

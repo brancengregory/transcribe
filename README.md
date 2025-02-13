@@ -1,11 +1,12 @@
 
 # transcribe <img src="man/figures/logo.png" align="right" height="139"/>
 
-[![R-CMD-check](https://github.com/brancengregory/transcribe/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/brancengregory/transcribe/actions)
+[![R-CMD-check](https://github.com/YourUserName/transcribe/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/YourUserName/transcribe/actions)
 
 The **transcribe** package provides an R interface to audio
 transcription using Whisper, with optional post‐processing via Ollama.
-It also includes a sample plumber API for a web interface.
+It also includes a sample plumber API for a web interface and a
+command-line interface (CLI).
 
 ## Installation
 
@@ -32,22 +33,32 @@ transcript <- transcribe_audio(
 cat(transcript)
 ```
 
+### CLI Usage
+
+To use the CLI, run the following command from your terminal:
+
+``` bash
+Rscript inst/scripts/cli.R -i "path/to/audio.wav" -l en -m large-v3-turbo -p TRUE -M llama3.2 -o "transcribe.txt"
+```
+
+This command will transcribe the audio file and save the output to
+`transcribe.txt`.
+
 ### Plumber API
 
-The package includes a sample plumber API in `inst/plumber/api.R`. To
-run it:
+You can also serve a web interface via **plumber**:
 
 ``` r
 library(plumber)
 plumber::plumb("inst/plumber/api.R")$run(port = 7608)
 ```
 
-Then open your browser at <http://127.0.0.1:7608> to see the web
-interface for uploading or specifying a URL for transcription.
+Then open your browser at <http://127.0.0.1:7608> to access the
+transcription interface.
 
 ## Vignettes
 
-You can access the vignette “intro” via:
+Access the vignette “intro” by running:
 
 ``` r
 vignette("intro", package = "transcribe")
