@@ -1,8 +1,8 @@
 ---
-title: "intro"
+title: "Introduction"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{intro}
+  %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,55 +14,197 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
+The **transcribe** package provides an R interface for audio transcription using OpenAI's **Whisper** model with optional post‑processing via **Ollama**. This package supports both a programmatic interface and a command‑line interface (CLI) as well as a web API using Plumber.
 
-This vignette introduces the **transcribe** package. The package provides an R interface to transcribe audio using Whisper, with optional post‐processing via Ollama. It supports both a programmatic interface and a command-line interface (CLI).
+This vignette will walk you through the installation and usage of **transcribe** with a focus on macOS and Linux systems.
 
 ## Installation
 
-```{r, eval=FALSE}
-# Install from GitHub (if not on CRAN yet)
+### 1. Install the Package
+
+Install **transcribe** from GitHub:
+
+```r
+# Uncomment if needed:
 # install.packages("remotes")
-remotes::install_github("YourUserName/transcribe")
+remotes::install_github("brancengregory/transcribe")
 ```
+
+### 2. Install Python Dependencies (Whisper)
+
+#### On macOS:
+
+- **Homebrew**:  
+  Ensure you have Homebrew installed. If not, visit [brew.sh](https://brew.sh) for instructions.  
+  Then, install Python (if needed) and use pip to install Whisper:
+  
+```bash
+brew install python3
+pip3 install openai-whisper
+```
+
+- **yt-dlp**:  
+  Install via Homebrew:
+  
+```bash
+brew install yt-dlp
+```
+
+#### On Linux:
+
+- **Python**:  
+  Ensure Python 3 is installed. For Ubuntu/Debian:
+  
+```bash
+sudo apt-get update
+sudo apt-get install python3 python3-pip
+pip3 install openai-whisper
+```
+
+- **yt-dlp**:  
+  You can install it via pip or your package manager:
+  
+```bash
+pip3 install yt-dlp
+```
+
+or
+
+```bash
+sudo apt-get install yt-dlp
+```
+
+### 3. Install and Run Ollama
+
+- **Ollama** is required for post‑processing.  
+  - **On macOS**: Check [Ollama's website](https://ollama.com) or use Homebrew if available:
+  
+    ```bash
+    brew install ollama
+    ollama run
+    ```
+  
+  - **On Linux**: Follow the installation instructions provided on [Ollama's documentation](https://ollama.com) (if available) or consider alternatives if Ollama is not supported.
+
+### 4. Additional Dependencies
+
+The package uses:
+- **processx** to wrap external commands (e.g., yt-dlp),
+- **reticulate** to call Python’s Whisper,
+- **ellmer** for prompt-based post‑processing of transcripts,
+- **curl** for URL encoding/decoding.
+
+Ensure these packages are installed in R:
+
+```r
+install.packages(c("processx", "reticulate", "ellmer", "curl", "logger", "glue", "stringr", "fs"))
+```
+
+## How It Works
+
+1. **Audio Downloading**:  
+   When given a remote URL, **processx** calls `yt-dlp` to download the audio file in WAV format.
+
+2. **Transcription via Whisper**:  
+   Python’s Whisper is accessed via **reticulate** to transcribe the audio.
+
+3. **Post‑processing with Ollama and ellmer**:  
+   The raw transcript from Whisper is optionally cleaned up using a prompt via **ellmer**, which sends the text to an Ollama server for formatting.
+
+4. **Interfaces**:  
+   - **CLI**: Process audio via command-line scripts.
+   - **Plumber API**: A web-based interface for uploading files or entering URLs.
 
 ## Basic Usage
 
-Below is a minimal example showing how to transcribe an audio file:
+### Transcribing a Local File
 
-```{r, eval=FALSE}
-# library(transcribe) # Uncomment once your package is installed
-# transcript <- transcribe_audio(
-#   input_path = "path/to/audio.wav",
-#   language = "en",
-#   whisper_model_name = "large-v3-turbo",
-#   processed = TRUE,
-#   ollama_model = "llama3.2"
-# )
-# cat(transcript)
+```r
+library(transcribe)
+
+transcript <- transcribe_audio(
+  input_path = "path/to/audio.wav",
+  language = "en",
+  whisper_model_name = "large-v3-turbo",
+  processed = TRUE,
+  ollama_model = "llama3.2"
+)
+cat(transcript)
+```
+
+### Transcribing an Online Video
+
+```r
+transcript <- transcribe_audio(
+  input_path = "https://www.youtube.com/watch?v=lT4Kosc_ers",
+  language = "en",
+  whisper_model_name = "large-v3-turbo",
+  processed = TRUE,
+  ollama_model = "llama3.2"
+)
 ```
 
 ## CLI Usage
 
-The **transcribe** package also provides a command-line interface (CLI). Once installed, you can run the CLI from your terminal. For example, if you have a script set up in `inst/scripts/cli.R`, you can execute:
+The package provides a command‑line interface. For example, run:
 
 ```bash
-Rscript inst/scripts/cli.R -i "path/to/audio.wav" -l en -m large-v3-turbo -p TRUE -M llama3.2 -o "transcribe.txt"
+Rscript inst/scripts/main_cli.R -i "path/to/audio.wav" -l en -m large-v3-turbo -p TRUE -M llama3.2 -o "transcribe.txt"
 ```
 
-This command will process the specified audio file and save the resulting transcript to `transcribe.txt`.
+This command processes the audio file and saves the transcript to `transcribe.txt`.
 
-## Plumber Integration
+## Plumber API
 
-You can serve a web interface via **plumber**:
+You can also run a web interface via **Plumber**:
 
-```{r, eval=FALSE}
-# library(plumber)
-# plumber::plumb("inst/plumber/api.R")$run(port = 7608)
+```r
+library(plumber)
+plumber::plumb("inst/plumber/api.R")$run(port = 7608)
 ```
 
-Then open your browser at [http://127.0.0.1:7608](http://127.0.0.1:7608) to access the interface.
+Then open your browser at [http://127.0.0.1:7608](http://127.0.0.1:7608) to access the transcription interface.
+
+## Technical Breakdown
+
+### Audio Downloading
+- **processx** wraps `yt-dlp` to download and convert audio files.
+
+### Transcription
+- **reticulate** is used to invoke Python’s Whisper, providing a state‑of‑the‑art transcription engine.
+
+### Post‑processing
+- **ellmer** sends the raw transcript to Ollama with a prompt to reformat and clean it up.
+
+## Troubleshooting
+
+### Out of Memory Errors
+- Purge the model cache in Ollama after transcription if needed:
+  ```bash
+  ollama purge --model llama3.2
+  ```
+- Consider using a smaller Whisper model (e.g., "tiny" or "base") if VRAM is limited.
+
+### yt-dlp Issues
+- Update yt-dlp:
+  ```bash
+  yt-dlp --update
+  ```
+
+### Ollama Not Running
+- Ensure Ollama is started:
+  ```bash
+  ollama run
+  ```
 
 ## Conclusion
 
-This vignette covered the basics of installing and using **transcribe** for audio transcription, including examples for both programmatic usage and command-line usage. For further details, refer to the package documentation and additional vignettes.
+The **transcribe** package provides a flexible R-based solution for audio transcription and cleanup, using Whisper, yt-dlp, and Ollama. It supports multiple interfaces (CLI and web) and offers a robust workflow for both local and online audio sources.
+
+For further details, please refer to the package documentation and additional vignettes.
+
+```{r, eval=FALSE}
+vignette("intro", package = "transcribe")
+```
+
+Happy transcribing!
