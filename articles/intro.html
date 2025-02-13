@@ -63,18 +63,17 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># library(transcribe)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>This vignette introduces the <strong>transcribe</strong> package. The
 package provides an R interface to transcribe audio using Whisper, with
-optional post‐processing via Ollama.</p>
+optional post‐processing via Ollama. It supports both a programmatic
+interface and a command-line interface (CLI).</p>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub (if not on CRAN yet)</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"YourUserName/transcribe"</span><span class="op">)</span></span></code></pre></div>
@@ -84,7 +83,7 @@ optional post‐processing via Ollama.</p>
 </h3>
 <p>Below is a minimal example showing how to transcribe an audio
 file:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># library(transcribe) # Uncomment once your package is installed</span></span>
 <span><span class="co"># transcript &lt;- transcribe_audio(</span></span>
 <span><span class="co">#   input_path = "path/to/audio.wav",</span></span>
@@ -96,21 +95,33 @@ file:</p>
 <span><span class="co"># cat(transcript)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="cli-usage">CLI Usage<a class="anchor" aria-label="anchor" href="#cli-usage"></a>
+</h3>
+<p>The <strong>transcribe</strong> package also provides a command-line
+interface (CLI). Once installed, you can run the CLI from your terminal.
+For example, if you have a script set up in
+<code>inst/scripts/cli.R</code>, you can execute:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/scripts/cli.R <span class="at">-i</span> <span class="st">"path/to/audio.wav"</span> <span class="at">-l</span> en <span class="at">-m</span> large-v3-turbo <span class="at">-p</span> TRUE <span class="at">-M</span> llama3.2 <span class="at">-o</span> <span class="st">"transcribe.txt"</span></span></code></pre></div>
+<p>This command will process the specified audio file and save the
+resulting transcript to <code>transcribe.txt</code>.</p>
+</div>
+<div class="section level3">
 <h3 id="plumber-integration">Plumber Integration<a class="anchor" aria-label="anchor" href="#plumber-integration"></a>
 </h3>
 <p>You can serve a web interface via <strong>plumber</strong>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># library(plumber)</span></span>
-<span><span class="co"># plumber::plumb("inst/plumber/api.R")$run()</span></span></code></pre></div>
-<p>Open your browser at <code>http://127.0.0.1:port</code> to see the
+<span><span class="co"># plumber::plumb("inst/plumber/api.R")$run(port = 7608)</span></span></code></pre></div>
+<p>Then open your browser at <a href="http://127.0.0.1:7608" class="external-link">http://127.0.0.1:7608</a> to access the
 interface.</p>
 </div>
 <div class="section level3">
 <h3 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h3>
 <p>This vignette covered the basics of installing and using
-<strong>transcribe</strong> for audio transcription. See the README or
-additional vignettes for more details.</p>
+<strong>transcribe</strong> for audio transcription, including examples
+for both programmatic usage and command-line usage. For further details,
+refer to the package documentation and additional vignettes.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -53,8 +53,8 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="transcribe-">transcribe <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#transcribe-"></a>
 </h1></div>
-<p><a href="https://github.com/brancengregory/transcribe/actions" class="external-link"><img src="https://github.com/brancengregory/transcribe/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></p>
-<p>The <strong>transcribe</strong> package provides an R interface to audio transcription using Whisper, with optional post‐processing via Ollama. It also includes a sample plumber API for a web interface.</p>
+<p><a href="https://github.com/YourUserName/transcribe/actions" class="external-link"><img src="https://github.com/YourUserName/transcribe/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></p>
+<p>The <strong>transcribe</strong> package provides an R interface to audio transcription using Whisper, with optional post‐processing via Ollama. It also includes a sample plumber API for a web interface and a command-line interface (CLI).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -82,20 +82,27 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">transcript</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="cli-usage">CLI Usage<a class="anchor" aria-label="anchor" href="#cli-usage"></a>
+</h3>
+<p>To use the CLI, run the following command from your terminal:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/scripts/cli.R <span class="at">-i</span> <span class="st">"path/to/audio.wav"</span> <span class="at">-l</span> en <span class="at">-m</span> large-v3-turbo <span class="at">-p</span> TRUE <span class="at">-M</span> llama3.2 <span class="at">-o</span> <span class="st">"transcribe.txt"</span></span></code></pre></div>
+<p>This command will transcribe the audio file and save the output to <code>transcribe.txt</code>.</p>
+</div>
+<div class="section level3">
 <h3 id="plumber-api">Plumber API<a class="anchor" aria-label="anchor" href="#plumber-api"></a>
 </h3>
-<p>The package includes a sample plumber API in <code>inst/plumber/api.R</code>. To run it:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>You can also serve a web interface via <strong>plumber</strong>:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.rplumber.io" class="external-link">plumber</a></span><span class="op">)</span></span>
 <span><span class="fu">plumber</span><span class="fu">::</span><span class="fu">plumb</span><span class="op">(</span><span class="st">"inst/plumber/api.R"</span><span class="op">)</span><span class="op">$</span><span class="fu">run</span><span class="op">(</span>port <span class="op">=</span> <span class="fl">7608</span><span class="op">)</span></span></code></pre></div>
-<p>Then open your browser at <a href="http://127.0.0.1:7608" class="external-link uri">http://127.0.0.1:7608</a> to see the web interface for uploading or specifying a URL for transcription.</p>
+<p>Then open your browser at <a href="http://127.0.0.1:7608" class="external-link uri">http://127.0.0.1:7608</a> to access the transcription interface.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
 </h2>
-<p>You can access the vignette “intro” via:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>Access the vignette “intro” by running:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"intro"</span>, package <span class="op">=</span> <span class="st">"transcribe"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
