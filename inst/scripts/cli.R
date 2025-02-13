@@ -1,11 +1,11 @@
 #!/usr/bin/env Rscript
+library(transcribe)
 library(optparse)
 library(cli)
 library(fs)
 library(readr)
 library(stringr)
 library(glue)
-source("core.R")  # Load the core logic
 
 option_list <- list(
   make_option(c("-i", "--input"), type = "character", default = NULL,

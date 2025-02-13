@@ -2,6 +2,7 @@
 allowed_whisper_models <- c("tiny", "base", "small", "medium", "large", "large-v3-turbo")
 
 #'
+#' @export
 init_whisper <- function() {
   if (!reticulate::py_module_available("whisper")) {
     cli::cli_alert_info("Python module 'whisper' not found. Installing openai-whisper via reticulate::py_install()...")
@@ -11,6 +12,7 @@ init_whisper <- function() {
 }
 
 # Download audio from URL using yt-dlp and processx.
+#' @export
 download_audio <- function(input_url) {
   tmp_audio <- fs::file_temp(ext = "wav")
   cli::cli_alert_info("Input is a URL. Downloading audio using yt-dlp...")
@@ -23,6 +25,7 @@ download_audio <- function(input_url) {
   return(tmp_audio)
 }
 
+#' @export
 load_whisper_model <- function(whisper, model_name) {
   if (!model_name %in% allowed_whisper_models) {
     rlang::abort(glue::glue("Invalid Whisper model '{model_name}'. Choose one of: {paste(allowed_whisper_models, collapse = ', ')}."))
@@ -34,6 +37,7 @@ load_whisper_model <- function(whisper, model_name) {
   wm
 }
 
+#' @export
 run_transcription <- function(wm, input_path, language = "en") {
   cli::cli_alert_info("Transcribing audio using Whisper...")
   transcription_result <- wm$transcribe(input_path, language = language)
@@ -41,6 +45,7 @@ run_transcription <- function(wm, input_path, language = "en") {
   transcription_result$text
 }
 
+#' @export
 post_process_transcript <- function(raw_transcript, ollama_model) {
   if (!rollama::ping_ollama(silent = TRUE)) {
     rlang::abort("Could not connect to Ollama at <http://localhost:11434>")
@@ -63,6 +68,7 @@ post_process_transcript <- function(raw_transcript, ollama_model) {
   formatted_response
 }
 
+#' @export
 transcribe_audio <- function(input_path, language = "en",
                              whisper_model_name = "large-v3-turbo",
                              processed = TRUE,
